@@ -1,5 +1,7 @@
 from pathlib import Path
+import os
 import sqlite3
+import tempfile
 from typing import List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -8,7 +10,13 @@ from pydantic import BaseModel, Field
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
-DB_PATH = BASE_DIR / "bird_scores.db"
+configured_db_path = os.getenv("BIRD_DATABASE_PATH")
+if configured_db_path:
+    DB_PATH = Path(configured_db_path)
+elif os.getenv("VERCEL"):
+    DB_PATH = Path(tempfile.gettempdir()) / "bird_scores.db"
+else:
+    DB_PATH = BASE_DIR / "bird_scores.db"
 
 app = FastAPI(title="Bird Flight API", version="1.0.0")
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")

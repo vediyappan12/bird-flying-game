@@ -28,6 +28,15 @@ If PowerShell blocks activation, use:
 then
 `.\.venv\Scripts\python.exe -m uvicorn backend.main:app --reload`
 
+## Deploy to Vercel
+
+1. Push the repository root to GitHub. In Vercel, import that repository and keep the project root directory set to `.` (the repository root).
+2. Leave the framework preset on **Other** and do not set a build command or output directory.
+3. Deploy. `pyproject.toml` points Vercel to the existing FastAPI application at `backend.main:app`; `requirements.txt` provides its Python dependencies.
+4. Check `/api/health` on the deployed domain. The game page and `/static` assets are served by the FastAPI app.
+
+Vercel's function filesystem is temporary. This project uses `/tmp/bird_scores.db` on Vercel to allow the SQLite API to start, but scores are not durable across function instances or deployments. For a persistent production leaderboard, replace SQLite with a hosted database and configure its connection string as a Vercel environment variable.
+
 ## Play
 - Press Space, click, or tap to flap.
 - Press Enter or click Restart after a collision.
